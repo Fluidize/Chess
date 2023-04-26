@@ -65,7 +65,6 @@ class Chess:
     next_square = input("Move to: ")
     cur_piece, cur_coordinate, sqr = self.getSquarePiece(current_square)
     possible_moves = []
-    print(cur_piece, cur_coordinate, sqr)
     if cur_piece[0] == "w":
       color = "white"
 
@@ -77,17 +76,17 @@ class Chess:
         for modifier in modifiers:
           square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
           if square[0] == "__":
-            possible_moves.append(square)
+            possible_moves.append(square[2])
         modifiers = [(-1,-1),(-1,1)]
         for modifier in modifiers:
           square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
           if "b" in square[0]:
-            possible_moves.append(square)
+            possible_moves.append(square[2])
       if cur_piece[1] == "N":
         modifiers = [(-1,-2),(1,-2),(-2,-1),(-2,1),(2,-1),(2,1),(-1,2),(1,2)]
         for modifier in modifiers:
           square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
-          possible_moves.append(square)
+          possible_moves.append(square[2])
 
     elif cur_piece[0] == "b":
       color = "black"
