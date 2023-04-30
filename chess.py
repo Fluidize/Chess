@@ -1,3 +1,6 @@
+import os
+
+
 class Chess:
 
   def __init__(self):
@@ -9,8 +12,9 @@ class Chess:
       for rank in ranks:
         smallarr.append("__" + rank + file)
       board.append(smallarr)
-
     self.board = board
+    self.colors = ["white", "black"]
+    self.color = ""
 
   def changeSquare(self, value, new_value="__", type="square"):
     #without specifying new value, square will be reset
@@ -39,8 +43,11 @@ class Chess:
       square = self.board[coordinate[0]][coordinate[1]]
       return [square[:2], coordinate, square[-2:]]
     elif type == "coordinate":
-      square = self.board[value[0]][value[1]]
-      return [square[:2], value, square[-2:]]
+      try:
+        square = self.board[value[0]][value[1]]
+        return [square[:2], value, square[-2:]]
+      except:
+        pass
 
   def setup(self):
     back_rank = ["R", "N", "B", "Q", "K", "B", "N", "R"]
@@ -61,37 +68,75 @@ class Chess:
         self.changeSquare(rank[z], color + back_rank[z])
 
   def move(self):
+    flip = False
+    #color flip flop
+    color = self.colors[int(flip)]
+
     current_square = input("Square: ")
     next_square = input("Move to: ")
     cur_piece, cur_coordinate, sqr = self.getSquarePiece(current_square)
     possible_moves = []
     if cur_piece[0] == "w":
-      color = "white"
-
-      #king
-      
       #pawn
       if cur_piece[1] == "P":
-        modifiers = [(-1,0),(-2,0)]
+        modifiers = [(-1, 0)]
+
+        if "2" in sqr:
+          modifiers.append((-2, 0))
+
         for modifier in modifiers:
-          square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
-          if square[0] == "__":
+          square = self.getSquarePiece(
+            (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
+            "coordinate")
+          if "__" in square[0]:
             possible_moves.append(square[2])
-        modifiers = [(-1,-1),(-1,1)]
+          else:
+            break
+
+        modifiers = [(-1, -1), (-1, 1)]
         for modifier in modifiers:
-          square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
+          square = self.getSquarePiece(
+            (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
+            "coordinate")
           if "b" in square[0]:
             possible_moves.append(square[2])
+
       if cur_piece[1] == "N":
-        modifiers = [(-1,-2),(1,-2),(-2,-1),(-2,1),(2,-1),(2,1),(-1,2),(1,2)]
+        modifiers = [(-1, -2), (1, -2), (-2, -1), (-2, 1), (2, -1), (2, 1),
+                     (-1, 2), (1, 2)]
         for modifier in modifiers:
-          square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
-          possible_moves.append(square[2])
+          square = self.getSquarePiece(
+            (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
+            "coordinate")
+          try:
+            if "w" not in square[0]:
+              possible_moves.append(square[2])
+          except:
+            pass
 
     elif cur_piece[0] == "b":
-      color = "black"
-      pass
-    print(possible_moves)
+      if cur_piece[1] == "P":
+        modifiers = [(1, 0)]
+
+        if "2" in sqr:
+          modifiers.append((2, 0))
+
+        for modifier in modifiers:
+          square = self.getSquarePiece(
+            (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
+            "coordinate")
+          if "__" in square[0]:
+            possible_moves.append(square[2])
+          else:
+            break
+
+        modifiers = [(1, -1), (1, 1)]
+        for modifier in modifiers:
+          square = self.getSquarePiece(
+            (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
+            "coordinate")
+          if "b" in square[0]:
+            possible_moves.append(square[2])
 
     if next_square in possible_moves:
       self.changeSquare(current_square)
@@ -99,16 +144,23 @@ class Chess:
     elif next_square not in possible_moves:
       raise Exception("Illegal Move")
 
-    
-  
   def displayBoard(self):
+    os.system("clear")
     for rank in self.board:
       for square in rank:
         print(square, end="  ")
       print("\n")
 
+  def start_game(self):
+    while True:
+      instance.setup()
+      instance.displayBoard()
+      instance.move()
+      instance.displayBoard()
+
 
 instance = Chess()
 instance.setup()
+instance.displayBoard()
 instance.move()
 instance.displayBoard()
