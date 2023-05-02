@@ -89,7 +89,16 @@ class Chess:
       possible_moves = []
       print(color)
       if cur_piece[0] == "w": 
-        
+        #king
+        if cur_piece[1] == "K":
+          modifiers = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
+          for modifier in modifiers:
+            square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
+            try:
+                if "w" not in square[2]:
+                  possible_moves.append(square[2])
+            except:
+              pass
         #pawn
         if cur_piece[1] == "P":
           modifiers = [(-1, 0)]
@@ -97,20 +106,23 @@ class Chess:
             modifiers.append((-2, 0))
           for modifier in modifiers:
             square = self.getSquarePiece(   
-              (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
-              "coordinate")
-            if "__" in square[0]:
-              possible_moves.append(square[2])
-            else:
-              break
+              (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),"coordinate")
+            try:
+              if "__" in square[0]:
+                possible_moves.append(square[2])
+              else:
+                break
+            except:
+              pass
           modifiers = [(-1, -1), (-1, 1)]
           for modifier in modifiers:
             square = self.getSquarePiece(
-              (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),
-              "coordinate")
-            if "b" in square[0]:
-              possible_moves.append(square[2])
-
+              (cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]),"coordinate")
+            try:
+              if "b" in square[0]:
+                possible_moves.append(square[2])
+            except:
+              pass
         #knight
         if cur_piece[1] == "N":
           modifiers = [(-1, -2), (1, -2), (-2, -1), (-2, 1), (2, -1), (2, 1),(-1, 2), (1, 2)]
@@ -123,7 +135,6 @@ class Chess:
                 possible_moves.append(square[2])
             except:
               pass
-        
         #bishop
         if cur_piece[1] == "B":
           #continous modifiers
@@ -143,9 +154,35 @@ class Chess:
               except:
                 break
               temp_mod = (temp_mod[0] + modifier[0], temp_mod[1] + modifier[1])
+        
+        if cur_piece[1] == "R":
+          modifiers = [(-1,0),(1,0),(0,-1),(0,1)]
+          for modifier in modifiers:
+            temp_mod = modifier
+            while True:
+              square = self.getSquarePiece((cur_coordinate[0] + temp_mod[0], cur_coordinate[1] + temp_mod[1]), "coordinate")
+              try:
+                if "__" in square[0]:
+                  possible_moves.append(square[2]) 
+                elif "b" in square[0]:
+                  possible_moves.append(square[2])
+                  break
+                else:
+                  break
+              except:
+                break
 
       elif cur_piece[0] == "b":
-          
+          if cur_piece[1] == "K":
+            modifiers = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
+            for modifier in modifiers:
+              square = self.getSquarePiece((cur_coordinate[0] + modifier[0], cur_coordinate[1] + modifier[1]), "coordinate")
+              try:
+                  if "b" not in square[2]:
+                    possible_moves.append(square[2])
+              except:
+                pass
+
           if cur_piece[1] == "P":
             modifiers = [(1, 0)]
             if "7" in sqr:
@@ -178,7 +215,45 @@ class Chess:
                   possible_moves.append(square[2])
               except:
                 pass
-      print(possible_moves)
+          
+                  #bishop
+          
+          if cur_piece[1] == "B":
+            #continous modifiers
+            modifiers = [(-1,-1),(-1,1),(1,-1),(1,1)]
+            for modifier in modifiers:
+              temp_mod = modifier
+              while True:
+                square = self.getSquarePiece((cur_coordinate[0] + temp_mod[0], cur_coordinate[1] + temp_mod[1]), "coordinate")
+                try:
+                  if "__" in square[0]:
+                    possible_moves.append(square[2]) 
+                  elif "w" in square[0]:
+                    possible_moves.append(square[2])
+                    break
+                  else:
+                    break
+                except:
+                  break
+                temp_mod = (temp_mod[0] + modifier[0], temp_mod[1] + modifier[1])
+
+          if cur_piece[1] == "R":
+            modifiers = [(-1,0),(1,0),(0,-1),(0,1)]
+            for modifier in modifiers:
+              temp_mod = modifier
+              while True:
+                square = self.getSquarePiece((cur_coordinate[0] + temp_mod[0], cur_coordinate[1] + temp_mod[1]), "coordinate")
+                try:
+                  if "__" in square[0]:
+                    possible_moves.append(square[2]) 
+                  elif "w" in square[0]:
+                    possible_moves.append(square[2])
+                    break
+                  else:
+                    break
+                except:
+                  break
+
       if next_square in possible_moves:
         self.changeSquare(current_square)
         self.changeSquare(next_square, cur_piece)
