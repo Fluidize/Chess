@@ -14,6 +14,7 @@ class Chess:
         smallarr.append("__" + rank + file)
       board.append(smallarr)
     self.board = board
+    self.err_msg = "ILLEGAL MOVE"
     self.colors = ["w", "b"]
     self.castle = {
       "w" : True,
@@ -48,7 +49,7 @@ class Chess:
         square = self.board[coordinate[0]][coordinate[1]]
         return [square[:2], coordinate, square[-2:]]
       except:
-        print(colored("INVALID", "red"))
+        print(colored(self.err_msg, "red"))
     elif type == "coordinate":
       try:
         square = self.board[value[0]][value[1]]
@@ -87,14 +88,9 @@ class Chess:
             if self.castle[color]:
               castle = inp
               break
-            else:
-              print(colored("YOU CAN'T CASTLE", "red"))
         except:
           if self.castle[color]:
             castle = inp
-          else:
-            print(colored("YOU CAN'T CASTLE", "red"))
-        
         try:
           cur_piece, cur_coordinate, sqr = self.getSquarePiece(current_square)
         except:
@@ -260,8 +256,6 @@ class Chess:
                 except:
                   pass
             
-                    #bishop
-            
             if cur_piece[1] == "B":
               #continous modifiers
               modifiers = [(-1,-1),(-1,1),(1,-1),(1,1)]
@@ -306,51 +300,39 @@ class Chess:
           if color == "w":
             square_1 = self.getSquarePiece("f1")
             square_2 = self.getSquarePiece("g1")
-            if (square_1[0] == "__") and (square_2[0] == "__"):
-              self.changeSquare("e1")
-              self.changeSquare("h1")
-              self.changeSquare("f1","wR")
-              self.changeSquare("g1","wK")
-              self.castle["w"] = False
-            else:
-              print(colored("ILLEGAL MOVE", "red"))
-          if color == "b":
+            pieces = ["e1","h1","f1","wR","g1","wK"]
+          elif color == "b":
             square_1 = self.getSquarePiece("f8")
             square_2 = self.getSquarePiece("g8")
-            if (square_1[0] == "__") and (square_2[0] == "__"):
-              self.changeSquare("e8")
-              self.changeSquare("h8")
-              self.changeSquare("f8","bR")
-              self.changeSquare("g8","bK")
-              self.castle["b"] = False
-            else:
-              print(colored("ILLEGAL MOVE", "red"))
-        if castle == "o-o-o":
+            pieces = ["e8","h8","f8","bR","g8","bK"]
+          if (square_1[0] == "__") and (square_2[0] == "__"):
+            self.changeSquare(pieces[0])
+            self.changeSquare(pieces[1])
+            self.changeSquare(pieces[2],pieces[3])
+            self.changeSquare(pieces[4],pieces[5])
+            self.castle[color] = False
+          else:
+            print(colored(self.err_msg, "red"))
+        
+        elif castle == "o-o-o":
           if color == "w":
             square_1 = self.getSquarePiece("d1")
             square_2 = self.getSquarePiece("c1")
             square_3 = self.getSquarePiece("b1")
-            if (square_1[0] == "__") and (square_2[0] == "__"):
-              self.changeSquare("e1")
-              self.changeSquare("a1")
-              self.changeSquare("d1","wR")
-              self.changeSquare("c1","wK")
-              self.castle["w"] = False
-            else:
-              print(colored("ILLEGAL MOVE", "red"))
-          if color == "b":
+            pieces = ["e1","a1","d1","wR","c1","wK"]
+          elif color == "b":
             square_1 = self.getSquarePiece("d8")
             square_2 = self.getSquarePiece("c8")
-            square_3 = self.getSquarePiece("b8")
-            if (square_1[0] == "__") and (square_2[0] == "__"):
-              self.changeSquare("e1")
-              self.changeSquare("a1")
-              self.changeSquare("d1","wR")
-              self.changeSquare("c1","wK")
-              self.castle["b"] = False
-            else:
-              print(colored("ILLEGAL MOVE", "red"))
-          break
+            square_3 = self.getSquarePiece("b8")  
+            pieces = ["e8","a8","d8","bR","c8","bK"]
+          if (square_1[0] == "__") and (square_2[0] == "__") and (square_3[0]):
+            self.changeSquare(pieces[0])
+            self.changeSquare(pieces[1])
+            self.changeSquare(pieces[2],pieces[3])
+            self.changeSquare(pieces[4],pieces[5])
+            self.castle[color] = False
+          else:
+            print(colored(self.err_msg, "red"))
       except:
         pass
 
@@ -365,9 +347,10 @@ class Chess:
           self.changeSquare(next_square, cur_piece)
           break
         elif next_square not in possible_moves:
-          print(colored("ILLEGAL MOVE", "red"))
+          raise Exception(self.err_msg)
       except:
-        print(colored("INVALID","red"))
+        if not inp == ("o-o" or "o-o-o"):
+          print(colored(self.err_msg,"red"))
 
   def displayBoard(self):
     for rank in self.board:
