@@ -1,9 +1,7 @@
 import os
 from termcolor import colored
 
-
 class Chess:
-
   def __init__(self):
     board = []
     ranks = ["a", "b", "c", "d", "e", "f", "g", "h"]
@@ -355,14 +353,19 @@ class Chess:
   def displayBoard(self):
     for rank in self.board:
       for square in rank:
-        print(square, end="  ")
+        if square[0] == "w":
+          print(colored(square,"blue"), end="  ")
+        elif square[0] == "b":
+          print(colored(square,"red"), end="  ")
+        else:
+          print(square, end="  ")
       print("\n")
 
   def start(self):
     flip = False
     self.setup()
     while True:
-      os.system('cls')
+      os.system('clear')
       move_color = self.colors[int(flip)]
       if move_color == "w":
         print(colored("WHITE'S TURN\n", "green"))
